@@ -174,6 +174,19 @@ def register():
 	}
 	r = requests.get(url, headers=headers)
 
+# this allows explicitly turning the receiver on or off. this only works because
+# of a very hacky assumption: when the receiver is off and still connected to
+# ethernet, it will always show BD as active input. if you don't have anything
+# connected to BD you will never use BD and thus you can assume the receiver is
+# powered off when showing BD as active input. based on this assumption we can
+# issue the str_powermain command to toggle its power state only if required to
+# change its state explicitly to either on or off.
+def changePowerState(action):
+	input = getCurrentInput()
+	rpower = False if input == "BD" else True
+	if (action == "on" and not rpower) or (action == "off" and rpower):
+		sendCommand("str_powermain", 1)
+
 def main():
 	argc = len(sys.argv)
 	
@@ -220,10 +233,7 @@ def main():
 		if action != "on" and action != "off":
 			print("Invalid option \"%s\", only \"on\" or \"off\" is allowed." % action)
 			exit(1)
-		input = getCurrentInput()
-		rpower = False if input == "BD" else True
-		if (action == "on" and not rpower) or (action == "off" and rpower):
-			sendCommand("str_powermain", 1)
+		changePowerState(action)
 		exit(0)
 
 	printUsage()
