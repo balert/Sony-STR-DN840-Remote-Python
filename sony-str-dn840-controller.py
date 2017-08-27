@@ -149,6 +149,30 @@ def printUsage():
 	print("Usage: %s switch <BD, DVD, GAME, ...>" % sys.argv[0])
 	print("Usage: %s list input" % sys.argv[0])
 	print("Usage: %s vol <0-20>" % sys.argv[0])
+	print("Usage: %s power <on/off>" % sys.argv[0])
+
+# scan all possible status values
+def scanStatus():
+	switchInputTo("BD")
+	for i in range(len(inputs)):
+		sendCommand("STR_FunctionPlus")
+		print(getCurrentInput())
+
+# initially register yourself with the receiver (go to HOME NETWORK on your 
+# receiver and make it listen for registrations via the options menu for this)
+def register():
+	encodedid = urllib.parse.quote_plus(myid)
+	print(encodedid)
+	url='http://%s:%d/cers/register?name=%s&registrationType=initial&deviceId=%s' % (ip, port_status, myname, encodedid)
+	headers = {
+		'X-CERS-DEVICE-ID': myid,
+		'X-CERS-DEVICE-INFO': mydevinfo,
+		'Connection': 'close',
+		'User-Agent': myuseragent,
+		'Host': '%s:%d' % (ip, port_status),
+		'Accept-Encoding': 'gzip'
+	}
+	r = requests.get(url, headers=headers)
 
 def main():
 	argc = len(sys.argv)
@@ -191,29 +215,17 @@ def main():
 		switchInputTo(sys.argv[2])
 		exit(0)
 
+	if argc == 3 and sys.argv[1] == "power":
+		action = sys.argv[2]
+		if action != "on" and action != "off":
+			print("Invalid option \"%s\", only \"on\" or \"off\" is allowed." % action)
+			exit(1)
+		input = getCurrentInput()
+		rpower = False if input == "BD" else True
+		if (action == "on" and not rpower) or (action == "off" and rpower):
+			sendCommand("str_powermain", 1)
+		exit(0)
+
 	printUsage()
-
-# scan all possible status values
-def scanStatus():
-	switchInputTo("BD")
-	for i in range(len(inputs)):
-		sendCommand("STR_FunctionPlus")
-		print(getCurrentInput())
-
-# initially register yourself with the receiver (go to HOME NETWORK on your 
-# receiver and make it listen for registrations via the options menu for this)
-def register():
-	encodedid = urllib.parse.quote_plus(myid)
-	print(encodedid)
-	url='http://%s:%d/cers/register?name=%s&registrationType=initial&deviceId=%s' % (ip, port_status, myname, encodedid)
-	headers = {
-		'X-CERS-DEVICE-ID': myid,
-		'X-CERS-DEVICE-INFO': mydevinfo,
-		'Connection': 'close',
-		'User-Agent': myuseragent,
-		'Host': '%s:%d' % (ip, port_status),
-		'Accept-Encoding': 'gzip'
-	}
-	r = requests.get(url, headers=headers)
 
 main()
