@@ -26,7 +26,12 @@ def getCurrentInput():
 		'Host': '%s:%d' % (ip, port_status),
 		'Accept-Encoding': 'gzip'
 	}
-	r = requests.get(url, headers=headers)
+	try:
+		r = requests.get(url, headers=headers)
+	except ConnectionError:
+		print("Connection error.")
+		return "error"
+
 	try: 
 		source = r.text.split("=")[3].split("\"")[1]
 		return source	
@@ -82,8 +87,13 @@ def switchInputTo(target):
 
 	if not target in inputs:
 		print("Can't switch to this source: %s." % target)
+		return
 	idx = inputs.index(target)
-	cidx = inputs.index(getCurrentInput())
+	currentInput = getCurrentInput()
+	if not currentInput in inputs:
+		print("current input %s not in inputs." % currentInput)
+		return 
+	cidx = inputs.index(currentInput)
 	diff = idx - cidx
 	print("diff to %s is %d." % (target, diff))
 	if diff < 0:
