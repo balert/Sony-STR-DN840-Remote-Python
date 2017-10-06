@@ -28,15 +28,13 @@ def getCurrentInput():
 	}
 	try:
 		r = requests.get(url, headers=headers)
-	except ConnectionError:
-		print("Connection error.")
-		return "error"
+	except:
+		return "not reachable"
 
 	try: 
 		source = r.text.split("=")[3].split("\"")[1]
 		return source	
 	except IndexError:
-		print("returned(%d): %s" % (r.status_code, r.text))
 		return "error"
 
 # send a command
@@ -95,7 +93,7 @@ def switchInputTo(target):
 		return 
 	cidx = inputs.index(currentInput)
 	diff = idx - cidx
-	print("diff to %s is %d." % (target, diff))
+	# print("diff to %s is %d." % (target, diff))
 	if diff < 0:
 		sendCommand("STR_FunctionMinus", abs(diff))
 	else:
@@ -206,7 +204,7 @@ def main():
 		exit(0)
 
 	if argc == 2 and sys.argv[1] == "status":
-		print("Currently selected input: %s." % getCurrentInput())
+		print(getCurrentInput())
 		exit(0)
 
 	if argc == 3 and sys.argv[1] == "list":
