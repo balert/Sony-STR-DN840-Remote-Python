@@ -14,9 +14,10 @@ myid="TVSideView:aa-bb-cc-dd-ee-ff"
 myname="Jarvis"
 mydevinfo='PythonScript' 
 myuseragent='PythonScript'
+alternative = { "VIDEO": "RasPlex", "DVD": "Chromecast", "GAME": "PC (HDMI)", "SA-CD/CD": "PC (optisch)"}
 
 # get currently active input  
-def getCurrentInput():
+def getCurrentInput(alternativeNames = False):
 	url='http://%s:%d/cers/getStatus' % (ip, port_status)
 	headers = {
 		'X-CERS-DEVICE-ID': myid,
@@ -33,7 +34,10 @@ def getCurrentInput():
 
 	try: 
 		source = r.text.split("=")[3].split("\"")[1]
-		return source	
+		if not alternativeNames:
+			return source	
+		else:
+			return alternative[source] if source in alternative else source
 	except IndexError:
 		return "error"
 
@@ -203,8 +207,11 @@ def main():
 		register()
 		exit(0)
 
-	if argc == 2 and sys.argv[1] == "status":
-		print(getCurrentInput())
+	if argc >= 2 and sys.argv[1] == "status":
+		if argc == 3:
+			print(getCurrentInput(True))
+		else:
+			print(getCurrentInput(False))
 		exit(0)
 
 	if argc == 3 and sys.argv[1] == "list":
