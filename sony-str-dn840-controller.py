@@ -28,9 +28,9 @@ def getCurrentInput(alternativeNames = False):
 		'Accept-Encoding': 'gzip'
 	}
 	try:
-		r = requests.get(url, headers=headers)
+		r = requests.get(url, headers=headers, timeout=1)
 	except:
-		return "not reachable"
+		return "offline"
 
 	try: 
 		source = r.text.split("=")[3].split("\"")[1]
