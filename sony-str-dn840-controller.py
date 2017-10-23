@@ -14,7 +14,7 @@ myid="TVSideView:aa-bb-cc-dd-ee-ff"
 myname="Jarvis"
 mydevinfo='PythonScript' 
 myuseragent='PythonScript'
-alternative = { "VIDEO": "RasPlex", "DVD": "Chromecast", "GAME": "PC (HDMI)", "SA-CD/CD": "PC (optisch)"}
+alternative = { "VIDEO": "RasPlex", "DVD": "Chromecast", "GAME": "PC (HDMI)", "SA-CD/CD": "PC (optisch)", "SAT/CATV": "PiTify"}
 
 # get currently active input  
 def getCurrentInput(alternativeNames = False):
