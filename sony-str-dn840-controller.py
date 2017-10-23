@@ -6,15 +6,7 @@ import sys
 import urllib
 
 # config
-ip="receiver"
-port_status=50001
-port_control=8080
-max_vol = 10
-myid="TVSideView:aa-bb-cc-dd-ee-ff"
-myname="Jarvis"
-mydevinfo='PythonScript' 
-myuseragent='PythonScript'
-alternative = { "VIDEO": "RasPlex", "DVD": "Chromecast", "GAME": "PC (HDMI)", "SA-CD/CD": "PC (optisch)", "SAT/CATV": "PiTify"}
+from config import *
 
 # get currently active input  
 def getCurrentInput(alternativeNames = False):
@@ -253,4 +245,5 @@ def main():
 
 	printUsage()
 
-main()
+if __name__ == "__main__":
+	main()
