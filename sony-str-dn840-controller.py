@@ -57,7 +57,11 @@ def sendCommand(key, repeat):
 	payload += "<s:Body> <u:X_SendIRCC xmlns:u=\"urn:schemas-sony-com:service:IRCC:1\"> <IRCCCode>%s==</IRCCCode>" % keycode
 	payload += "</u:X_SendIRCC> </s:Body> </s:Envelope>" 
 	for i in range(0, int(repeat)):
-		r = requests.post(url, headers=headers, data=payload)
+		try: 
+			r = requests.post(url, headers=headers, data=payload)
+		except: 
+			# capture connection errors silently
+			pass
 		time.sleep(.5)
 
 # Inputs
