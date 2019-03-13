@@ -4,6 +4,8 @@ import itertools
 import time
 import sys 
 import urllib
+import paho.mqtt.client as mqtt
+import json
 
 # config
 from config import *
@@ -195,8 +197,48 @@ def changePowerState(action):
 	if (action == "on" and not rpower) or (action == "off" and rpower):
 		sendCommand("str_powermain", 1)
 
+def on_message(client, userdata, msg):
+	topic = msg.topic
+	payload = msg.payload.decode()
+
+	print("message: ", payload)
+
+	pyl = json.loads(payload)
+	print("json:", pyl)
+	
+	action = pyl["action"]
+	if action == "power":
+		print("power")
+		changePowerState(int(pyl["value"]))
+	elif action == "cmd":
+		if pyl["value"] == "VolumeUp" or pyl["value"] == "VolumeDown":
+			print("cmd", pyl["value"])
+			sendCommand(pyl["value"],1)
+	elif action == "input":
+		print("switch", pyl["value"])
+		switchInputTo(pyl["value"])
+	else:
+		print("unknown message")
+
+def mqttListen():
+	while True:
+		try: 
+			client = mqtt.Client()
+			client.on_message = on_message
+			client.connect(mqtt_host, mqtt_port, 60)
+			client.subscribe(mqtt_topic)
+			print("MQTT listening to %s ..." % mqtt_topic)
+			client.loop_forever()
+		except Exception as e:
+			print(e)
+			time.sleep(10)
+
 def main():
 	argc = len(sys.argv)
+
+	if argc == 2 and sys.argv[1] == "mqtt":
+		mqttListen()
+		exit(0)
 	
 	if argc == 2 and sys.argv[1] == "register":
 		print("Registering as %s (ID:%s)", (myname, myid))

@@ -8,3 +8,6 @@ myname="PythonSonyController" 				# name for this remote control
 mydevinfo='PythonScript' 					# some info about this device
 myuseragent='PythonScript' 					# used user agent
 alternative = { "VIDEO": "Renamed VIDEO" } 	# rename inputs as shown by status 
+mqtt_topic = "sony/#"
+mqtt_host = "host.fqdn"
+mqtt_port = 1883
