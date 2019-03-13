@@ -1,0 +1,17 @@
+[Unit]
+Description=sony-strdn840-mqtt-controller
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/Sony-STR-DN840-Remote-Python
+ExecStart=/opt/Sony-STR-DN840-Remote-Python/venv/bin/python3 -u /opt/Sony-STR-DN840-Remote-Python/sony-str-dn840-controller.py
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=sony-strdn840-mqtt-controller
+Restart=on-failure
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
