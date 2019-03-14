@@ -203,22 +203,36 @@ def on_message(client, userdata, msg):
 
 	print("message: ", payload)
 
-	pyl = json.loads(payload)
-	print("json:", pyl)
-	
-	action = pyl["action"]
-	if action == "power":
-		print("power")
-		changePowerState(int(pyl["value"]))
-	elif action == "cmd":
-		if pyl["value"] == "VolumeUp" or pyl["value"] == "VolumeDown":
-			print("cmd", pyl["value"])
-			sendCommand(pyl["value"],1)
-	elif action == "input":
-		print("switch", pyl["value"])
-		switchInputTo(pyl["value"])
+	if payload == "mute":
+		sendCommand("mute",1)
+	elif "vup" in payload:
+		(vup, val) = payload.split("=")
+		sendCommand("VolumeUp", int(val))
+	elif "vdown" in payload:
+		(vdown, val) = payload.split("=")
+		sendCommand("VolumeDown", int(val))
+	elif "switch" in payload:
+		switchInputTo(payload.split("=")[1])
 	else:
-		print("unknown message")
+		print("unknown: ", payload)
+
+
+	# pyl = json.loads(payload)
+	# print("json:", pyl)
+
+	# action = pyl["action"]
+	# if action == "power":
+	# 	print("power")
+	# 	changePowerState(int(pyl["value"]))
+	# elif action == "cmd":
+	# 	if pyl["value"] == "VolumeUp" or pyl["value"] == "VolumeDown":
+	# 		print("cmd", pyl["value"])
+	# 		sendCommand(pyl["value"],1)
+	# elif action == "input":
+	# 	print("switch", pyl["value"])
+	# 	switchInputTo(pyl["value"])
+	# else:
+	# 	print("unknown message")
 
 def mqttListen():
 	while True:
