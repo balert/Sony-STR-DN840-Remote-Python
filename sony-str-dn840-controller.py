@@ -6,6 +6,7 @@ import sys
 import urllib
 import paho.mqtt.client as mqtt
 import json
+import _thread
 
 # config
 from config import *
@@ -213,6 +214,8 @@ def on_message(client, userdata, msg):
 		sendCommand("VolumeDown", int(val))
 	elif "switch" in payload:
 		switchInputTo(payload.split("=")[1])
+	elif "input" in payload:
+		pass
 	else:
 		print("unknown: ", payload)
 
@@ -234,18 +237,36 @@ def on_message(client, userdata, msg):
 	# else:
 	# 	print("unknown message")
 
+def sensorMain():
+	print("Starting sensor thread")
+	while True:
+		try:
+			client = mqtt.Client()
+			client.on_message = on_message
+			client.connect(mqtt_host, mqtt_port, 60)
+			while True:
+				current = getCurrentInput()
+				client.publish("%s/input" % mqtt_topic, current)
+				time.sleep(1)
+		except Exception as e:
+			print(e)
+		time.sleep(10)
+
 def mqttListen():
+
+	_thread.start_new_thread(sensorMain, ())
+
 	while True:
 		try: 
 			client = mqtt.Client()
 			client.on_message = on_message
 			client.connect(mqtt_host, mqtt_port, 60)
-			client.subscribe(mqtt_topic)
+			client.subscribe("%s/#" % mqtt_topic)
 			print("MQTT listening to %s ..." % mqtt_topic)
 			client.loop_forever()
 		except Exception as e:
 			print(e)
-			time.sleep(10)
+		time.sleep(10)
 
 def main():
 	argc = len(sys.argv)
