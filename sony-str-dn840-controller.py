@@ -243,7 +243,7 @@ def sensorMain():
 		try:
 			client = mqtt.Client()
 			client.on_message = on_message
-			client.connect(mqtt_host, mqtt_port, 60)
+			client.connect(mqtt_host, mqtt_port, 20)
 			while True:
 				current = getCurrentInput()
 				client.publish("%s/input" % mqtt_topic, current)
@@ -260,10 +260,10 @@ def mqttListen():
 		try: 
 			client = mqtt.Client()
 			client.on_message = on_message
-			client.connect(mqtt_host, mqtt_port, 60)
+			client.connect(mqtt_host, mqtt_port, 20)
 			client.subscribe("%s/#" % mqtt_topic)
 			print("MQTT listening to %s ..." % mqtt_topic)
-			client.loop_forever()
+			client.loop_forever(retry_first_connection=True)
 		except Exception as e:
 			print(e)
 		time.sleep(10)
