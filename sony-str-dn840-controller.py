@@ -23,7 +23,7 @@ def getCurrentInput(alternativeNames = False):
 		'Accept-Encoding': 'gzip'
 	}
 	try:
-		r = requests.get(url, headers=headers, timeout=1)
+		r = requests.get(url, headers=headers, timeout=0.75)
 	except:
 		return "offline"
 
@@ -161,6 +161,7 @@ def printUsage():
 	print("Usage: %s list input" % sys.argv[0])
 	print("Usage: %s vol <0-20>" % sys.argv[0])
 	print("Usage: %s power <on/off>" % sys.argv[0])
+	print("Usage: %s mqtt" % sys.argv[0])
 
 # scan all possible status values
 def scanStatus():
@@ -202,8 +203,6 @@ def on_message(client, userdata, msg):
 	topic = msg.topic
 	payload = msg.payload.decode()
 
-	print("message: ", payload)
-
 	if payload == "mute":
 		sendCommand("mute",1)
 	elif "vup" in payload:
@@ -237,32 +236,36 @@ def on_message(client, userdata, msg):
 	# else:
 	# 	print("unknown message")
 
-def sensorMain():
+def sensorMain(client):
 	print("Starting sensor thread")
 	while True:
 		try:
-			client = mqtt.Client()
-			client.on_message = on_message
-			client.connect(mqtt_host, mqtt_port, 20)
 			while True:
 				current = getCurrentInput()
 				client.publish("%s/input" % mqtt_topic, current)
+				print("current input: %s" % current)
 				time.sleep(1)
 		except Exception as e:
 			print(e)
 		time.sleep(10)
 
-def mqttListen():
 
-	_thread.start_new_thread(sensorMain, ())
+def on_connect(client, userdata, flags, rc):
+	print("Connected...")
+	client.subscribe("%s" % mqtt_topic)
+	print("MQTT listening to %s ..." % mqtt_topic)
+
+
+def mqttListen():
+	client = mqtt.Client()
+
+	_thread.start_new_thread(sensorMain, (client,))
 
 	while True:
 		try: 
-			client = mqtt.Client()
 			client.on_message = on_message
+			client.on_connect = on_connect
 			client.connect(mqtt_host, mqtt_port, 20)
-			client.subscribe("%s/#" % mqtt_topic)
-			print("MQTT listening to %s ..." % mqtt_topic)
 			client.loop_forever(retry_first_connection=True)
 		except Exception as e:
 			print(e)
