@@ -68,7 +68,9 @@ def sendCommand(key, repeat):
 		time.sleep(.5)
 
 # Inputs
-inputs = ["BD", "DVD", "GAME", "SAT/CATV", "VIDEO", "TV", "SA-CD/CD", "FM TUNER", "AM TUNER", "USB", "HOME NETWORK", "SEN"]
+# STR-DN1040 inputs = ["BD", "DVD", "GAME", "SAT/CATV", "VIDEO 1", "VIDEO 2", "VIDEO 3", "TV", "SA-CD/CD", "FM TUNER", "AM TUNER", "USB", "HOME NETWORK", "SEN"]
+# STR-DN840 inputs = ["BD", "DVD", "GAME", "SAT/CATV", "VIDEO", "TV", "SA-CD/CD", "FM TUNER", "AM TUNER", "USB", "HOME NETWORK", "SEN"]
+inputs = ["BD", "DVD", "GAME", "SAT/CATV", "VIDEO 1", "VIDEO 2", "VIDEO 3", "TV", "SA-CD/CD", "FM TUNER", "AM TUNER", "USB", "HOME NETWORK", "SEN"]
 
 # Change input to
 def switchInputTo(target):
